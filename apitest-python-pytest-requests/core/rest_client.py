@@ -3,8 +3,9 @@ import json as complexjson
 
 class RestClient():
 
-    def __init__(self, api_root_url):
+    def __init__(self, api_root_url, proxy):
         self.api_root_url = api_root_url
+        self.proxies = {"http": proxy}
         self.session = requests.session()
 
     def get(self, url, **kwargs):
@@ -30,17 +31,17 @@ class RestClient():
         cookies = dict(**kwargs).get("params")
         # self.request_log(url, method, data, json, params, headers, files, cookies)
         if method == "GET":
-            return self.session.get(url, **kwargs)
+            return self.session.get(url, proxies=self.proxies, **kwargs)
         if method == "POST":
-            return requests.post(url, data, json, **kwargs)
+            return requests.post(url, data, json, proxies=self.proxies, **kwargs)
         if method == "PUT":
             if json:
                 # PUT 和 PATCH 中没有提供直接使用json参数的方法，因此需要用data来传入
                 data = complexjson.dumps(json)
-            return self.session.put(url, data, **kwargs)
+            return self.session.put(url, data, proxies=self.proxies, **kwargs)
         if method == "DELETE":
-            return self.session.delete(url, **kwargs)
+            return self.session.delete(url, proxies=self.proxies, **kwargs)
         if method == "PATCH":
             if json:
                 data = complexjson.dumps(json)
-            return self.session.patch(url, data, **kwargs)
+            return self.session.patch(url, data, proxies=self.proxies, **kwargs)

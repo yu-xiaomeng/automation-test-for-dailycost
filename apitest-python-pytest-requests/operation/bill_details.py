@@ -24,8 +24,7 @@ def bill_details_create(category_id, type, amount, note, date, token):
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
     }
-    proxy = {'http':'http://127.0.0.1:8081'}
-    res = bill_details.create_new_bill_details(json=payload, headers=header, proxies=proxy)
+    res = bill_details.create_new_bill_details(json=payload, headers=header)
     result.success = False
     if res.json()["code"] == 100:
         result.success = True
