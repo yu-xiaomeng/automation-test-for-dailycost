@@ -16,8 +16,7 @@ def login_user(username, password):
     header = {
         "Content-Type": "application/json"
     }
-    proxy = {'http':'http://127.0.0.1:8081'}
-    res = user.login(json=payload, headers=header, proxies=proxy)
+    res = user.login(json=payload, headers=header)
     result.success = False
     if res.json()["code"] == 100:
         result.success = True

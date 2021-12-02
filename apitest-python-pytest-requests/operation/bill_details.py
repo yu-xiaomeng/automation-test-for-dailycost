@@ -30,7 +30,7 @@ def bill_details_create(category_id, type, amount, note, date, token):
         result.success = True
     else:
         result.error = "接口返回码是 【 {} 】, 返回信息：{} ".format(res.json()["code"], res.json()["message"])
-    result.msg = res.json()["message"]
+    result.message = res.json()["message"]
     result.response = res
     return result
 
