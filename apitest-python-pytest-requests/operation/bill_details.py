@@ -26,3 +26,25 @@ def bill_details_get_by_id(id, token):
     res = bill_details.get_bill_details_by_id(id, headers=header)
 
     return ResultBase(res)
+
+def bill_details_one_month_list_by_date(date, token):
+    
+    header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+    }
+    param = {"date": date}
+    res = bill_details.get_bill_details_list(params=param, headers=header)
+
+    return ResultBase(res)
+
+def bill_monthly_stat(date, token):
+    
+    header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+    }
+    param = {"date": date}
+    res = bill_details.get_bill_monthly(params=param, headers=header)
+
+    return ResultBase(res)

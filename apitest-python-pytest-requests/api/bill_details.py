@@ -28,5 +28,8 @@ class BillDetails(RestClient):
     def delete_bill_details_by_id(self, id, **kwargs):
         return self.delete("/bill/details/{}".format(id), **kwargs)
 
+    def get_bill_monthly(self, **kwargs):
+        return self.get("/bill/monthly", **kwargs)
+
 
 bill_details = BillDetails(api_root_url, proxy)
