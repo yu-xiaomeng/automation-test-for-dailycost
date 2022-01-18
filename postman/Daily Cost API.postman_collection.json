@@ -1,0 +1,598 @@
+{
+	"info": {
+		"_postman_id": "a170a3c9-5763-47a7-9025-70f4c8f3ecec",
+		"name": "Daily Cost API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "登录",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const token = pm.response.json().data.token;",
+							"pm.environment.set(\"token\", token);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"username\", \"yuxiaomeng\");",
+							"pm.variables.set(\"password\", \"20211030.y\");",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/login",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "新建记账类别",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"categoryId is in response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.id).to.have.lengthOf.above(1);",
+							"    pm.environment.set(\"categoryId\", jsonData.data.id)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"iconId\": \"category-icon-004\",\n    \"name\": \"服装\",\n    \"type\": \"EXPENSE\"\n}"
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/category",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "记一笔",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"amount\", 50.57);",
+							"pm.environment.set(\"year\", 2000);",
+							"pm.environment.set(\"month\", 10);",
+							"pm.environment.set(\"day\", 11);",
+							"",
+							"pm.variables.set(\"date\",pm.environment.get(\"year\")+'-'+pm.environment.get(\"month\")+'-'+pm.environment.get(\"day\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"billId is in response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.id).to.have.lengthOf.above(1);",
+							"    pm.environment.set(\"billId\", jsonData.data.id)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": {{amount}},\n    \"categoryId\": \"{{categoryId}}\",\n    \"date\": \"{{date}}\",\n    \"type\": \"EXPENSE\",\n    \"note\": \"for api test, don't delete this bill\"\n}"
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/bill",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"bill"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查看账单明细列表",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"monthDate\",pm.environment.get(\"year\")+'-'+pm.environment.get(\"month\"));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"length of bill is 3\", function () {",
+							"    pm.expect(jsonData.data[0].bill).to.lengthOf(3);",
+							"});",
+							"",
+							"pm.test(\"expense and income stat of the day is correct\", function () {",
+							"    pm.expect(jsonData.data[0].expense).to.eql(1850.57);",
+							"    pm.expect(jsonData.data[0].income).to.eql(6873.56);",
+							"});",
+							"",
+							"pm.test(\"new bill id is in response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"billId\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/bill/list?date={{monthDate}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"bill",
+						"list"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "{{monthDate}}",
+							"description": "(Required) "
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查看账单详情",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"category is right\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"categoryId\"));",
+							"    pm.expect(pm.response.text()).to.include(\"服装\");",
+							"});",
+							"",
+							"pm.test(\"Type is right\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"EXPENSE\");",
+							"});",
+							"",
+							"pm.test(\"amount is right\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"amount\"));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/bill/{{billId}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"bill",
+						"{{billId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "编辑账单",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"date\",pm.environment.get(\"year\")+'-'+pm.environment.get(\"month\")+'-'+pm.environment.get(\"day\"));",
+							"pm.variables.set(\"amount\", pm.variables.get(\"amount\")+100.5);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"billId is in response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.id).to.eql(pm.environment.get(\"billId\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": {{amount}},\n    \"categoryId\": \"{{categoryId}}\",\n    \"date\": \"{{date}}\",\n    \"type\": \"EXPENSE\",\n    \"id\": \"{{billId}}\",\n    \"note\": \"for api test, don't delete this bill - updated\"\n}"
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/bill",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"bill"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查看月度账单汇总值",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"monthDate\",pm.environment.get(\"year\")+'-'+pm.environment.get(\"month\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"monthly stat is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data.expense).to.eql(1951.07);",
+							"    pm.expect(jsonData.data.income).to.eql(6873.56);",
+							"     pm.expect(jsonData.data.balance).to.eql(4922.49);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "host",
+						"value": "192.168.1.105:8080"
+					},
+					{
+						"key": "proxy-connection",
+						"value": "keep-alive"
+					},
+					{
+						"key": "pragma",
+						"value": "no-cache"
+					},
+					{
+						"key": "cache-control",
+						"value": "no-cache"
+					},
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5dXhpYW9tZW5nIiwiZXhwIjoxNjQxNzI4MTM2fQ.8ZrddPXh6Y8uPYKiWBkRyWmy4GWEL-COo5eY6aPZSrQLWzQezq6WGwgd6fJunQL5LdW8KVRgkzVRmYJF8vdETw"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"
+					},
+					{
+						"key": "referer",
+						"value": "http://192.168.1.105:8080/billList"
+					},
+					{
+						"key": "accept-encoding",
+						"value": "gzip, deflate"
+					},
+					{
+						"key": "accept-language",
+						"value": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"
+					},
+					{
+						"key": "cookie",
+						"value": "token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5dXhpYW9tZW5nIiwiZXhwIjoxNjQxNzI4MTM2fQ.8ZrddPXh6Y8uPYKiWBkRyWmy4GWEL-COo5eY6aPZSrQLWzQezq6WGwgd6fJunQL5LdW8KVRgkzVRmYJF8vdETw"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/bill/stat/monthly?date={{monthDate}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"bill",
+						"stat",
+						"monthly"
+					],
+					"query": [
+						{
+							"key": "date",
+							"value": "{{monthDate}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "删除类别",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.environment.unset(\"categoryId\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/category/{{categoryId}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"category",
+						"{{categoryId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "查看年度账单汇总值",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Your test name\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.data).to.lengthOf(12);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "host",
+						"value": "192.168.1.105:8080"
+					},
+					{
+						"key": "proxy-connection",
+						"value": "keep-alive"
+					},
+					{
+						"key": "pragma",
+						"value": "no-cache"
+					},
+					{
+						"key": "cache-control",
+						"value": "no-cache"
+					},
+					{
+						"key": "accept",
+						"value": "application/json, text/plain, */*"
+					},
+					{
+						"key": "authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5dXhpYW9tZW5nIiwiZXhwIjoxNjQxNzI4MTM2fQ.8ZrddPXh6Y8uPYKiWBkRyWmy4GWEL-COo5eY6aPZSrQLWzQezq6WGwgd6fJunQL5LdW8KVRgkzVRmYJF8vdETw"
+					},
+					{
+						"key": "user-agent",
+						"value": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"
+					},
+					{
+						"key": "referer",
+						"value": "http://192.168.1.105:8080/billList"
+					},
+					{
+						"key": "accept-encoding",
+						"value": "gzip, deflate"
+					},
+					{
+						"key": "accept-language",
+						"value": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7"
+					},
+					{
+						"key": "cookie",
+						"value": "token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ5dXhpYW9tZW5nIiwiZXhwIjoxNjQxNzI4MTM2fQ.8ZrddPXh6Y8uPYKiWBkRyWmy4GWEL-COo5eY6aPZSrQLWzQezq6WGwgd6fJunQL5LdW8KVRgkzVRmYJF8vdETw"
+					}
+				],
+				"url": {
+					"raw": "{{BaseUrl}}/bill/stat/yearly?year={{year}}",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"bill",
+						"stat",
+						"yearly"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": "{{year}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
