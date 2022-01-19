@@ -1,8 +1,8 @@
-test_bill_details_create_success:
+test_bill_create_success:
   # category_id, type, amount, note, date, status_code, message
   - ["5442d3b8-9d4a-4654-bf0b-d2249efef190", "EXPENSE", 100.01, "note1111test", "2021-12-01", 200, "操作成功"]
 
-test_bill_details_create_param_validate_success:
+test_bill_create_param_validate_success:
   # description, category_id, type, amount, note, date, status_code, message
   - ["test 01","66c22fad-be9d-481d-a445-c57d266bf937", "INCOME", 100.01, "note1111test", "2021-12-01", 400, "类别ID不存在"] # 无权访问该数据
   - ["test 02","5442d3b8-9d4a-4654-bf0b-d2249efef190f", "INCOME", 100.01, "note1111test", "2021-12-01", 400, "类别ID不存在"]

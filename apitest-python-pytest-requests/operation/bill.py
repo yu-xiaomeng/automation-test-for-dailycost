@@ -1,7 +1,7 @@
 from core.result_base import ResultBase
-from api.bill_details import bill_details
+from api.bill import bill
 
-def bill_details_create(category_id, type, amount, note, date, token):
+def bill_create(category_id, type, amount, note, date, token):
     payload = {
         "categoryId": category_id,
         "type": type,
@@ -13,28 +13,28 @@ def bill_details_create(category_id, type, amount, note, date, token):
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
     }
-    res = bill_details.create_new_bill_details(json=payload, headers=header)
+    res = bill.create_new_bill(json=payload, headers=header)
     
     return ResultBase(res)
 
-def bill_details_get_by_id(id, token):
+def bill_get_by_id(id, token):
     
     header = {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
     }
-    res = bill_details.get_bill_details_by_id(id, headers=header)
+    res = bill.get_bill_by_id(id, headers=header)
 
     return ResultBase(res)
 
-def bill_details_one_month_list_by_date(date, token):
+def one_month_bill_list_get_by_date(date, token):
     
     header = {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
     }
     param = {"date": date}
-    res = bill_details.get_bill_details_list(params=param, headers=header)
+    res = bill.get_bill_list(params=param, headers=header)
 
     return ResultBase(res)
 
@@ -45,6 +45,6 @@ def bill_monthly_stat(date, token):
         "Authorization": "Bearer " + token
     }
     param = {"date": date}
-    res = bill_details.get_bill_monthly(params=param, headers=header)
+    res = bill.get_bill_monthly(params=param, headers=header)
 
     return ResultBase(res)

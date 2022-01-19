@@ -1,5 +1,5 @@
 from pytest import mark
-from operation.bill_details import bill_details_get_by_id
+from operation.bill import bill_get_by_id
 
 @mark.bill
 class TestBillDetailsGetById():
@@ -8,7 +8,7 @@ class TestBillDetailsGetById():
         ("596d6ded-db59-4720-a41b-b0ce3019ac8e", 200, "操作成功")
         ])
     def test_bill_details_get_by_id_success(self, id, status_code, message, token):
-        result = bill_details_get_by_id(id, token)
+        result = bill_get_by_id(id, token)
         
         assert result.status_code == status_code
         assert result.message == message
@@ -23,6 +23,6 @@ class TestBillDetailsGetById():
         ("596d6ded-db59-4720-a41b-b0ce3019ac8ef", 400, "ID不存在")
         ])
     def test_bill_details_get_by_id_param_validate(self, id, status_code, message, token):
-        result = bill_details_get_by_id(id, token)
+        result = bill_get_by_id(id, token)
         assert result.status_code == status_code
         assert result.message == message

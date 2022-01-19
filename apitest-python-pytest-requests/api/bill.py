@@ -9,20 +9,20 @@ api_root_url = setting_config["host"]["api_root_url"]
 proxy = setting_config["host"]["proxy"]
 
 
-class BillDetails(RestClient):
+class Bill(RestClient):
     def __init__(self, api_root_url, proxy, **kwargs):
-        super(BillDetails, self).__init__(api_root_url, proxy, **kwargs)
+        super(Bill, self).__init__(api_root_url, proxy, **kwargs)
 
-    def create_new_bill_details(self, **kwargs):
+    def create_new_bill(self, **kwargs):
         return self.post("/bill", **kwargs)
     
-    def get_bill_details_list(self, **kwargs):
+    def get_bill_list(self, **kwargs):
         return self.get("/bill/list", **kwargs)
     
-    def get_bill_details_by_id(self, id, **kwargs):
+    def get_bill_by_id(self, id, **kwargs):
         return self.get("/bill/{}".format(id), **kwargs)
     
-    def update_bill_details(self, **kwargs):
+    def update_bill(self, **kwargs):
         return self.put("/bill", **kwargs)
 
     def delete_bill_details_by_id(self, id, **kwargs):
@@ -32,4 +32,4 @@ class BillDetails(RestClient):
         return self.get("/bill/stat/monthly", **kwargs)
 
 
-bill_details = BillDetails(api_root_url, proxy)
+bill = Bill(api_root_url, proxy)
